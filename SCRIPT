@@ -9,25 +9,39 @@ arrayStarted=true
 
 # CHANGE THIS VARIABLES ---------------------------------------------
 St_On_Off=1
+ 		# TURN THE SCRIPT ON OR OFF. 0 disable backup, 1 enable backup. If set "0" nothing will be modified (copied or deleted)!
+
 Script_Name="bkp_folder"
-Script_Dir="/mnt/user/bdrtec/Unassigned_Devices_Backup"
+ 		# Script name. It'll be created in "CA user scripts" (Unraid -> Settings -> User Scripts -> "Script_Name") and in the folder "Script_Dir" (Script_Dir/Script_Name). Type between "" without / begin and end
+
+Script_Dir="/mnt/user/bdrtec/Folder_Backup"
+		# Path to backup scripts. Type between "" without / begin and end
+
 Backup_Dir="/mnt/user/Backup"
-Day_Sync=90 #0 = disable
+		# Path to backup all files. Type between "" without / begin and end
+
+Day_Sync=90
+		# Incremental backup: the frequency is scheduled in "CA User Scripts -> Schedule Disabled"
+ 		# Sync backup: 0 disable, x enable. "Day_Sync" is how often the script will sync (mirroring) backup
+
 #Send_Email1="test1@gmail.com"
 #Send_Email2="test2@gmail.com"
 Send_Email_TI="test3@gmail.com"
-
-Msg_Mail_Subject="Backup: ${Backup_Dir}"
-Msg_Device="Destino"
-Msg_Date="Data"
-
-Msg_Bkp_Type_Incr="Tipo = Incremental"
-Msg_Bkp_Type_Sync="Tipo = Sincronizado"
-
-Msg_Bkp_Start="Status: Backup inicializado. Você receberá um e-mail quando terminar"
-Msg_Bkp_Finish_On="Status: Backup efetuado com sucesso"
-Msg_Error="Status: Backup configurado incorretamente"
 # END CHANGE THIS VARIABLES -----------------------------------------
+
+# TRANSLATE THIS VARIABLES TO YOUR LANGUAGE -------------------------
+# Translate to your preferred language (English, Portuguese, German, Russian, Italian, Spanish, etc)
+#Msg_Mail_Subject="Backup: ${Backup_Dir}"
+#Msg_Device="Destiny"
+#Msg_Date="Date"
+
+#Msg_Bkp_Type_Incr="Type = Incremental"
+#Msg_Bkp_Type_Sync="Type = Synchronized"
+
+#Msg_Bkp_Start="Status: Backup initialized. You'll receive an email when finish"
+#Msg_Bkp_Finish="Status: Backup performed successfully"
+#Msg_Error="Status: Backup configured incorrectly"
+# END TRANSLATE THIS VARIABLES TO YOUR LANGUAGE ---------------------
 
 # INCREMENTAL AND SYNC BACKUP ---------------------------------------
 Func-Incr-Sync() {
