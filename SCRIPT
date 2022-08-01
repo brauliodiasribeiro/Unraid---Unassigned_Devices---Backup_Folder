@@ -31,16 +31,16 @@ Send_Email_TI="test3@gmail.com"
 
 # TRANSLATE THIS VARIABLES TO YOUR LANGUAGE -------------------------
 # Translate to your preferred language (English, Portuguese, German, Russian, Italian, Spanish, etc)
-#Msg_Mail_Subject="Backup: ${Backup_Dir}"
-#Msg_Device="Destiny"
-#Msg_Date="Date"
+Msg_Mail_Subject="Backup: ${Backup_Dir}"
+Msg_Device="Destiny"
+Msg_Date="Date"
 
-#Msg_Bkp_Type_Incr="Type = Incremental"
-#Msg_Bkp_Type_Sync="Type = Synchronized"
+Msg_Bkp_Type_Incr="Type = Incremental"
+Msg_Bkp_Type_Sync="Type = Synchronized"
 
-#Msg_Bkp_Start="Status: Backup initialized. You'll receive an email when finish"
-#Msg_Bkp_Finish="Status: Backup performed successfully"
-#Msg_Error="Status: Backup configured incorrectly"
+Msg_Bkp_Start="Status: Backup initialized. You'll receive an email when finish"
+Msg_Bkp_Finish="Status: Backup performed successfully"
+Msg_Error="Status: Backup configured incorrectly"
 # END TRANSLATE THIS VARIABLES TO YOUR LANGUAGE ---------------------
 
 # INCREMENTAL AND SYNC BACKUP ---------------------------------------
