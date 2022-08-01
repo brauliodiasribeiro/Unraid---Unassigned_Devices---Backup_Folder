@@ -28,7 +28,7 @@
 	- Create a script in "CA User Scripts / Script_Name"
 	  (Unraid -> Settings -> User Scripts -> Script_Name").
 
-  - Configure the variables in "script".
+  	- Configure the variables in "script".
 
 	- The folder and all files will be created in "Src_Flash / Script_Name"
 	  (/boot/config/plugins/user.scripts/scripts/Script_Name")
