@@ -30,4 +30,4 @@
 
 	- Add the path of the folders you want to backup in "Script_Dir / Script_Name / PATHS.txt".
 
-	- Run the "script" on each device again to sync all files and start the backup.
+	- Run the "script" again to sync all files and start the backup.
