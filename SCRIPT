@@ -12,7 +12,7 @@ St_On_Off=1
  		# TURN THE SCRIPT ON OR OFF. 0 disable backup, 1 enable backup. If set "0" nothing will be modified (copied or deleted)!
 
 Script_Name="bkp_folder"
- 		# Script name. It'll be created in "CA user scripts" (Unraid -> Settings -> User Scripts -> "Script_Name") and in the folder "Script_Dir" (Script_Dir/Script_Name). Type between "" without / begin and end
+ 		# Script name. Created in "CA user scripts" (Unraid -> Settings -> User Scripts -> "Script_Name"). A copy will be made in the folder "Script_Dir" (Script_Dir/Script_Name). Type between "" without / begin and end
 
 Script_Dir="/mnt/user/bdrtec/Folder_Backup"
 		# Path to backup scripts. Type between "" without / begin and end
@@ -24,9 +24,9 @@ Day_Sync=90
 		# Incremental backup: the frequency is scheduled in "CA User Scripts -> Schedule Disabled"
  		# Sync backup: 0 disable, x enable. "Day_Sync" is how often the script will sync (mirroring) backup
 
-#Send_Email1="test1@gmail.com"
+Send_Email1="test1@gmail.com"
 #Send_Email2="test2@gmail.com"
-Send_Email_TI="test3@gmail.com"
+#Send_Email_TI="test3@gmail.com"
 # END CHANGE THIS VARIABLES -----------------------------------------
 
 # TRANSLATE THIS VARIABLES TO YOUR LANGUAGE -------------------------
