@@ -1,0 +1,175 @@
+#!/bin/bash
+#PATH=/usr/local/sbin:/usr/sbin:/sbin:/usr/local/bin:/usr/bin:/bin
+arrayStarted=true
+
+# INCREMENTAL OR SYNC BACKUP TO UNRAID UNASSIGNED DEVICES -----------
+# LINK: https://github.com/bdrtec/Unraid-Bkp-Folder-bdrtec
+# AUTHOR: BRAULIO RIBEIRO
+# -------------------------------------------------------------------
+
+# CHANGE THIS VARIABLES ---------------------------------------------
+St_On_Off=1
+Script_Name="bkp_folder"
+Script_Dir="/mnt/user/bdrtec/Unassigned_Devices_Backup"
+Backup_Dir="/mnt/user/Backup"
+Day_Sync=90 #0 = disable
+#Send_Email1="test1@gmail.com"
+#Send_Email2="test2@gmail.com"
+Send_Email_TI="test3@gmail.com"
+
+Msg_Mail_Subject="Backup: ${Backup_Dir}"
+Msg_Device="Destino"
+Msg_Date="Data"
+
+Msg_Bkp_Type_Incr="Tipo = Incremental"
+Msg_Bkp_Type_Sync="Tipo = Sincronizado"
+
+Msg_Bkp_Start="Status: Backup inicializado. Você receberá um e-mail quando terminar"
+Msg_Bkp_Finish_On="Status: Backup efetuado com sucesso"
+Msg_Error="Status: Backup configurado incorretamente"
+# END CHANGE THIS VARIABLES -----------------------------------------
+
+# INCREMENTAL AND SYNC BACKUP ---------------------------------------
+Func-Incr-Sync() {
+	echo "" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	echo "${Msg_Bkp_Start}" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	Func-Send-Email
+	Func-Log
+	
+	# Read the file with the date of the last backup in the YYYY-MM-DD format
+	Log_Last_Sync_Bkp=$(sed '$q' "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt")
+	
+	# Test if the file exists or is empty
+	if [ ! -f "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt" ] || [ -z "${Log_Last_Sync_Bkp}" ]; then
+		# Save the date of the last backup (today) in the YYYY-MM-DD format
+		echo "${Today_Date}" > "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt"
+	fi
+	
+	if [ -n "${Day_Sync}" ] && [ "${Day_Sync}" -ne 0 ]; then
+		# Difference in days. The calculation is in seconds (Today_Date - Log_Last_Sync_Bkp)
+		let Dif_Date=($(date +%s -d ${Today_Date})-$(date +%s -d ${Log_Last_Sync_Bkp}))/86400
+		
+		# Test if the current date is the backup scheduled date
+		if [ "${Dif_Date}" -ge "${Day_Sync}" ]; then
+			St_Sync_Bkp=1
+		fi
+	fi
+}
+# END INCREMENTAL AND SYNC BACKUP -----------------------------------
+
+# FUNCTION RSYNC ----------------------------------------------------
+Func-Rsync() {
+	Rsync_Config=("-avih" "--stats")
+	
+	if [ -n "${St_Sync_Bkp}" ] && [ "${St_Sync_Bkp}" -eq "1" ]; then
+		echo "${Today_Date}" > "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt"
+		echo "${Msg_Bkp_Type_Sync}" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+		Rsync_Config+=("--delete")
+	else
+		echo "${Msg_Bkp_Type_Incr}" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	fi
+	
+	echo "" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	echo "${Msg_Bkp_Finish_On}" >> "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	Rsync_Config+=("--include-from=${Src_Flash}/${Script_Name}/PATHS.txt" "--exclude=*" "/mnt/user/" "${Backup_Dir}")
+	rsync "${Rsync_Config[@]}"
+}
+# END FUNCTION RSYNC ------------------------------------------------
+
+# FUNCTION SEND EMAIL ----------------------------------------------
+Func-Send-Email() {
+	if [ -n "${Send_Email1}" ]; then
+		sendmail "${Send_Email1}" < "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	fi
+	
+	if [ -n "${Send_Email2}" ]; then
+		sendmail "${Send_Email2}" < "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	fi
+	
+	if [ -n "${Send_Email_TI}" ]; then
+		sendmail "${Send_Email_TI}" < "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+	fi
+}
+# END FUNCTION SEND EMAIL ------------------------------------------
+
+# FUNCTION LOG ------------------------------------------------------
+Func-Log() {
+	Today_Date=$(date +%Y-%m-%d)
+
+cat << EOF > "${Src_Flash}/${Script_Name}/LOG-BKP.txt"
+From: "${Send_Email1}"
+To: "${Send_Email1}"
+Cc: "${Send_Email2}"
+Cco: "${Send_Email_TI}"
+Subject: ${Msg_Mail_Subject}
+${Msg_Device} = ${Backup_Dir}
+${Msg_Date} = ${Today_Date}
+EOF
+}
+# END FUNCTION LOG --------------------------------------------------
+
+# FUNCTION CREATE SCRIPT --------------------------------------------
+Func-Create-Script() {
+	Src_Flash="/boot/config/plugins/user.scripts/scripts"
+	
+	if [ ! -d "${Script_Dir}/${Script_Name}" ]; then
+		mkdir "${Script_Dir}/${Script_Name}"
+	fi
+	
+	if [ ! -f "${Src_Flash}/${Script_Name}/PATHS.txt" ]; then
+		touch "${Src_Flash}/${Script_Name}/PATHS.txt"
+	fi
+	
+	if [ ! -d "${Backup_Dir}" ]; then
+		mkdir "${Backup_Dir}"
+	fi
+}
+# END FUNCTION CREATE SCRIPT ----------------------------------------
+
+# FUNCTION SYNC SCRIPT ----------------------------------------------
+Func-Sync-Script() {
+	if [ -d "${Src_Flash}/${Script_Name}" ]; then
+		# Copy "LOG-BKP.txt"
+		if [ -f "${Src_Flash}/${Script_Name}/LOG-BKP.txt" ]; then
+			cp -R "${Src_Flash}/${Script_Name}/LOG-BKP.txt" "${Script_Dir}/${Script_Name}/"
+		fi
+		
+		# Copy "LOG-LAST-SYNC-BKP.txt"
+		if [ -f "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt" ]; then
+			cp -R "${Src_Flash}/${Script_Name}/LOG-LAST-SYNC-BKP.txt" "${Script_Dir}/${Script_Name}/"
+		fi
+		
+		# Copy "PATHS.txt"
+		if [ -f "${Script_Dir}/${Script_Name}/PATHS.txt" ]; then
+			cp -R "${Script_Dir}/${Script_Name}/PATHS.txt" "${Src_Flash}/${Script_Name}/"
+		elif [ -f "${Src_Flash}/${Script_Name}/PATHS.txt" ]; then
+			cp -R "${Src_Flash}/${Script_Name}/PATHS.txt" "${Script_Dir}/${Script_Name}/"
+		fi
+		
+		# Change folder permission
+		chown -R root:users "${Script_Dir}/${Script_Name}/"
+		chmod -R 660 "${Script_Dir}/${Script_Name}/"
+	fi
+}
+# END FUNCTION SYNC SCRIPT ------------------------------------------
+
+# MAIN --------------------------------------------------------------
+# Check if all variables are filled correctly
+if ([ -d "/boot/config/plugins/user.scripts/scripts" ] && [ -d "${Script_Dir}" ] && [ -n "${Script_Name}" ] && [ -n "${Backup_Dir}" ] && 
+([ -n "${Send_Email1}" ] || [ -n "${Send_Email2}" ] || [ -n "${Send_Email_TI}" ]) && 
+([ -n "${Day_Sync}" ] && ([ "${Day_Sync}" -ge "0" ] && [ "${Day_Sync}" -le "360" ])) && 
+([ -n "${St_On_Off}" ] && ([ "${St_On_Off}" -eq "0" ] || [ "${St_On_Off}" -eq "1" ])) ); then
+	if [ "${St_On_Off}" -eq "1" ]; then
+		Func-Create-Script
+		Func-Sync-Script
+		Func-Log
+		
+		Func-Incr-Sync
+		Func-Rsync
+		Func-Sync-Script
+		Func-Send-Email
+	fi
+else
+	/usr/local/emhttp/webGui/scripts/notify -s "${Msg_Device}" -m "${Msg_Error}" -t
+fi
+# END MAIN ----------------------------------------------------------
