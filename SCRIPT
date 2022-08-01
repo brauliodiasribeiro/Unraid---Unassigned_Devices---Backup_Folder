@@ -14,7 +14,7 @@ St_On_Off=1
 Script_Name="bkp_folder"
  		# Script name. Created in "CA user scripts" (Unraid -> Settings -> User Scripts -> "Script_Name"). A copy will be made in the folder "Script_Dir" (Script_Dir/Script_Name). Type between "" without / begin and end
 
-Script_Dir="/mnt/user/bdrtec/Folder_Backup"
+Script_Dir="/mnt/user/Scripts"
 		# Path to backup scripts. Type between "" without / begin and end
 
 Backup_Dir="/mnt/user/Backup"
