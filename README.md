@@ -1,5 +1,5 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?business=QVR5JEKFBASVW&no_recurring=0&currency_code=USD)
-## Incremental or Sync Backup to Folder
+## Description
 * This script make incremental or sync backup to a folder.
 
 * It's possible to schedule how often and what type of the backup will be done.
